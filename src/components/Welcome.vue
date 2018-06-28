@@ -10,8 +10,8 @@
             </v-toolbar>
             <v-card-text>
               <v-form>
-                <v-text-field name="login" label="Login" type="text"></v-text-field>
-                <v-text-field id="password" name="password" label="Password" type="password"></v-text-field>
+                <v-text-field v-model="email" name="login" label="Email" type="text"></v-text-field>
+                <v-text-field v-model="password" id="password" name="password" label="Password" type="password"></v-text-field>
               </v-form>
             </v-card-text>
             <v-card-actions>
@@ -51,7 +51,7 @@
                 </v-dialog>
               </v-layout>
 
-              <v-btn color="success">Login</v-btn>
+              <v-btn color="success" @click.native="signIn(email, password)">Login</v-btn>
             </v-card-actions>
           </v-card>
         </v-flex>
@@ -81,6 +81,8 @@ export default {
         email: '',
         password: ''
       },
+      email: '',
+      password: '',
       loading: false,
       errorMessage: null
     }
@@ -95,7 +97,7 @@ export default {
     signIn(email, password){
       return firebase.auth().signInWithEmailAndPassword(email, password)
         .then(res => this.$router.push({name: 'Dashboard'}))
-        .catch((error) => { this.errorMessage = error.message })
+        .catch((error) => { this.errorMessage = error.messagitge })
     }
   }
 }
