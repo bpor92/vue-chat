@@ -4,14 +4,28 @@
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md4>
           <v-card class="elevation-12">
-            <v-toolbar  dark color="primary" class="text-xs-center">
+            <v-toolbar  color="red" class="text-xs-center">
               <v-toolbar-title >Join to chat!</v-toolbar-title>
               <v-spacer></v-spacer>
             </v-toolbar>
             <v-card-text>
               <v-form>
-                <v-text-field v-model="email" name="login" label="Email" type="text"></v-text-field>
-                <v-text-field v-model="password" id="password" name="password" label="Password" type="password"></v-text-field>
+                <v-text-field
+                  v-model="email"
+                  name="login"
+                  label="Email"
+                  type="text"
+                  :rules="[rules.required, rules.email]"
+                  :error-messages="errors.emailMessage"
+                  />
+                <v-text-field
+                  v-model="password"
+                  id="password"
+                  name="password"
+                  label="Password"
+                  type="password"
+                  :rules="[rules.required]"
+                  :error-messages="errors.passwordMessage"/>
               </v-form>
             </v-card-text>
             <v-card-actions>
@@ -29,6 +43,7 @@
                             <v-text-field
                               label="Email"
                               required
+                              :rules="[rules.required, rules.email]"
                               v-model="register.email"/>
                           </v-flex>
                           <v-flex xs12>
@@ -51,7 +66,7 @@
                 </v-dialog>
               </v-layout>
 
-              <v-btn color="success" @click.native="signIn(email, password)">Login</v-btn>
+              <v-btn color="primary" @click.native="signIn(email, password)">Login</v-btn>
             </v-card-actions>
           </v-card>
         </v-flex>
@@ -59,7 +74,7 @@
     </v-container>
 
     <v-layout row justify-center>
-      <v-dialog v-model="loading" persistent fullscreen content-class="loading-dialog">
+      <v-dialog v-model="loading" persistent transition="fade-transition" fullscreen content-class="loading-dialog">
         <v-container fill-height>
           <v-layout row justify-center align-center>
             <v-progress-circular indeterminate :size="70" :width="7" color="purple"></v-progress-circular>
@@ -84,7 +99,18 @@ export default {
       email: '',
       password: '',
       loading: false,
-      errorMessage: null
+      errors: {
+        emailMessage: [],
+        passwordMessage: []
+      },
+      rules: {
+          required: value => !!value || 'Required.',
+
+          email: value => {
+            const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            return pattern.test(value) || 'Invalid e-mail.'
+          }
+        }
     }
   },
   methods: {
@@ -92,19 +118,31 @@ export default {
       this.loading = true
       firebase.auth().createUserWithEmailAndPassword(this.register.email, this.register.password)
         .then(res => this.signIn(this.register.email, this.register.password))
-        .catch((error) => { this.errorMessage = error.message })
+        .catch((error) => {
+          this.loading = false
+          this.errorMessage = error.message
+        })
     },
     signIn(email, password){
+      this.loading = true
       return firebase.auth().signInWithEmailAndPassword(email, password)
         .then(res => this.$router.push({name: 'Dashboard'}))
-        .catch((error) => { this.errorMessage = error.messagitge })
+        .catch((error) => {
+          this.loading = false
+          if(error.code === 'auth/user-not-found'){
+            this.errors.emailMessage = error.message
+          }
+          if(error.code === 'auth/wrong-password'){
+            this.errors.passwordMessage = error.message
+          }
+        })
     }
   }
 }
 </script>
 <style>
 .loading-dialog{
-  background-color: #303030;
+  background-color: rgba(125, 120, 120, 0.3);
   opacity: 0.5;
 }
 </style>
