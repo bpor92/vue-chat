@@ -126,7 +126,7 @@ export default {
     signIn(email, password){
       this.loading = true
       return firebase.auth().signInWithEmailAndPassword(email, password)
-        .then(res => this.$router.push({name: 'Dashboard'}))
+        .then(res => this.$router.push({name: 'Home'}))
         .catch((error) => {
           this.loading = false
           if(error.code === 'auth/user-not-found'){

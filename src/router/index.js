@@ -2,7 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import firebase from 'firebase/app'
 import Welcome from '@/components/Welcome'
-import Dashboard from '@/components/Dashboard'
+import Home from '@/components/Home'
+import Chat from '@/components/Chat'
 
 Vue.use(Router)
 
@@ -15,12 +16,19 @@ const router =  new Router({
       component: Welcome
     },
     {
-      path: '/dashboard',
-      name: 'Dashboard',
-      component: Dashboard,
+      path: '/home',
+      name: 'Home',
+      component: Home,
       meta: {
         requiresAuth: true
-      }
+      },
+      children: [
+        {
+          path: '/chat',
+          name: 'Chat',
+          component: Chat,
+        }
+      ]
     }
   ]
 })

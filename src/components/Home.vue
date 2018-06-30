@@ -19,7 +19,7 @@
         </v-list-tile>
         <v-subheader class="mt-3 grey--text text--darken-1">SUBSCRIPTIONS</v-subheader>
         <v-list>
-          <v-list-tile v-for="item in items2" :key="item.text" avatar @click="">
+          <v-list-tile v-for="item in items2" :key="item.text" avatar @click="test">
             <v-list-tile-avatar>
               <img :src="`https://randomuser.me/api/portraits/men/${item.picture}.jpg`" alt="">
             </v-list-tile-avatar>
@@ -67,7 +67,7 @@
     <v-content>
       <v-container fill-height>
         <v-layout justify-center align-center>
-
+          <router-view/>
         </v-layout>
       </v-container>
     </v-content>
@@ -75,7 +75,11 @@
 </template>
 <script>
 export default {
-data: () => ({
+  props: {
+    source: String
+  },
+  data() {
+    return {
       drawer: true,
       items: [
         { icon: 'trending_up', text: 'Most Popular' },
@@ -91,9 +95,12 @@ data: () => ({
         { picture: 58, text: 'Nokia' },
         { picture: 78, text: 'MKBHD' }
       ]
-    }),
-    props: {
-      source: String
     }
+  },
+  methods: {
+    test() {
+      this.$router.push({ name: 'Chat'})
+    }
+  }
 }
 </script>
