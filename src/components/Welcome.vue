@@ -154,8 +154,17 @@ export default {
     },
     signIn(email, password){
       this.loading = true
-      return firebase.auth().signInWithEmailAndPassword(email, password)
-        .then(res => this.$router.push({name: 'Home'}))
+      let that = this
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .then(res => {
+          db.collection('users').where('id', '==', res.user.uid).get().then(snapshot => {
+            snapshot.forEach(user => {
+              const data = user.data()
+              that.$store.dispatch('setUser', { ...data, login: user.id})
+              that.$router.push({name: 'Home'})
+            })
+          })
+        })
         .catch((error) => {
           this.loading = false
           if(error.code === 'auth/user-not-found'){

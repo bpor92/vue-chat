@@ -8,16 +8,14 @@
     >
       <v-list dense>
         <v-subheader class="mt-3 grey--text text--darken-1">FRIENDS</v-subheader>
+
         <v-list>
-          <v-list-tile v-for="item in subscriptions" :key="item.text" avatar @click="test">
-            <v-list-tile-avatar>
-              <img :src="`https://randomuser.me/api/portraits/men/${item.picture}.jpg`" alt="">
-            </v-list-tile-avatar>
-            <v-list-tile-title v-text="item.text"></v-list-tile-title>
+          <v-list-tile v-for="friend in userFriends" :key="friend.id" avatar @click="test">
+            <v-list-tile-title v-text="friend.text"></v-list-tile-title>
           </v-list-tile>
         </v-list>
 
-        <v-list-tile @click="">
+        <v-list-tile>
           <v-list-tile-action>
             <v-icon color="grey darken-1">settings</v-icon>
           </v-list-tile-action>
@@ -25,6 +23,7 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
+
     <v-toolbar
       color="red"
       dense
@@ -41,8 +40,9 @@
       <v-spacer></v-spacer>
       <v-layout row align-center style="max-width: 650px">
         <v-autocomplete
-          v-model="model"
-          :items="items"
+          v-model="userSelect"
+          @input="addToFriends"
+          :items="usersList"
           :loading="isLoading"
           :search-input.sync="search"
           color="white"
@@ -74,52 +74,39 @@ export default {
   props: {
     source: String
   },
-  created() {
-    db.collection('users').get().then(collection => {
-      this.isLoading = false
-      this.usersList = collection.docs.map(document => document.id)
-    })
-  },
   data() {
     return {
-      descriptionLimit: 60,
-      entries: [],
       isLoading: false,
-      model: null,
+      userSelect: null,
       search: null,
       drawer: true,
-      usersList: [],
-      subscriptions: [
-        { picture: 28, text: 'Joseph' },
-        { picture: 38, text: 'Apple' },
-        { picture: 48, text: 'Xbox Ahoy' },
-        { picture: 58, text: 'Nokia' },
-        { picture: 78, text: 'MKBHD' }
-      ]
     }
   },
+  created() {
+    this.initUsers()
+  },
   methods: {
+    initUsers() {
+      this.$store.dispatch('initUsersList')
+    },
     test() {
       this.$router.push({ name: 'Chat'})
+    },
+    addToFriends(value){
+      if(value === undefined) return
+      let userRef = db.collection('users').doc(value)
+      userRef.get().then(user => {
+        const data = user.data()
+
+      })
     }
   },
   computed: {
-    items () {
-      return this.entries
-    }
-  },
-  watch: {
-    search (val) {
-      // Items have already been loaded
-      if (this.items.length > 0) return
-
-      this.isLoading = true
-
-      // Lazily load input items
-      db.collection('users').get().then(collection => {
-        this.isLoading = false
-        this.entries = collection.docs.map(document => document.id)
-      }).finally(() => (this.isLoading = false))
+    userFriends () {
+      return this.$store.getters.getUserFriends
+    },
+    usersList () {
+      return this.$store.getters.getUsersList
     }
   }
 }
