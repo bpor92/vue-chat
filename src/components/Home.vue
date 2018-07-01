@@ -7,36 +7,21 @@
       app
     >
       <v-list dense>
-        <v-list-tile v-for="item in items" :key="item.text" @click="">
-          <v-list-tile-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>
-              {{ item.text }}
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-subheader class="mt-3 grey--text text--darken-1">SUBSCRIPTIONS</v-subheader>
+        <v-subheader class="mt-3 grey--text text--darken-1">FRIENDS</v-subheader>
         <v-list>
-          <v-list-tile v-for="item in items2" :key="item.text" avatar @click="test">
+          <v-list-tile v-for="item in subscriptions" :key="item.text" avatar @click="test">
             <v-list-tile-avatar>
               <img :src="`https://randomuser.me/api/portraits/men/${item.picture}.jpg`" alt="">
             </v-list-tile-avatar>
             <v-list-tile-title v-text="item.text"></v-list-tile-title>
           </v-list-tile>
         </v-list>
-        <v-list-tile class="mt-3" @click="">
-          <v-list-tile-action>
-            <v-icon color="grey darken-1">add_circle_outline</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-title class="grey--text text--darken-1">Browse Channels</v-list-tile-title>
-        </v-list-tile>
+
         <v-list-tile @click="">
           <v-list-tile-action>
             <v-icon color="grey darken-1">settings</v-icon>
           </v-list-tile-action>
-          <v-list-tile-title class="grey--text text--darken-1">Manage Subscriptions</v-list-tile-title>
+          <v-list-tile-title class="grey--text text--darken-1">Settings</v-list-tile-title>
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
@@ -53,15 +38,23 @@
         <span class="title">Chat App</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-spacer></v-spacer>
       <v-layout row align-center style="max-width: 650px">
-        <v-text-field
-          placeholder="Search..."
-          single-line
-          append-icon="search"
-          :append-icon-cb="() => {}"
+        <v-autocomplete
+          v-model="model"
+          :items="items"
+          :loading="isLoading"
+          :search-input.sync="search"
           color="white"
-          hide-details
-        ></v-text-field>
+          hide-no-data
+          hide-selected
+          item-text="Description"
+          item-value="API"
+          placeholder="Start typing to search user"
+          prepend-icon="mdi-database-search"
+          return-object
+          class="mt-3"
+        ></v-autocomplete>
       </v-layout>
     </v-toolbar>
     <v-content>
@@ -74,21 +67,29 @@
   </div>
 </template>
 <script>
+import { db } from '@/firebase/config'
+import axios from 'axios'
+
 export default {
   props: {
     source: String
   },
+  created() {
+    db.collection('users').get().then(collection => {
+      this.isLoading = false
+      this.usersList = collection.docs.map(document => document.id)
+    })
+  },
   data() {
     return {
+      descriptionLimit: 60,
+      entries: [],
+      isLoading: false,
+      model: null,
+      search: null,
       drawer: true,
-      items: [
-        { icon: 'trending_up', text: 'Most Popular' },
-        { icon: 'subscriptions', text: 'Subscriptions' },
-        { icon: 'history', text: 'History' },
-        { icon: 'featured_play_list', text: 'Playlists' },
-        { icon: 'watch_later', text: 'Watch Later' }
-      ],
-      items2: [
+      usersList: [],
+      subscriptions: [
         { picture: 28, text: 'Joseph' },
         { picture: 38, text: 'Apple' },
         { picture: 48, text: 'Xbox Ahoy' },
@@ -100,6 +101,25 @@ export default {
   methods: {
     test() {
       this.$router.push({ name: 'Chat'})
+    }
+  },
+  computed: {
+    items () {
+      return this.entries
+    }
+  },
+  watch: {
+    search (val) {
+      // Items have already been loaded
+      if (this.items.length > 0) return
+
+      this.isLoading = true
+
+      // Lazily load input items
+      db.collection('users').get().then(collection => {
+        this.isLoading = false
+        this.entries = collection.docs.map(document => document.id)
+      }).finally(() => (this.isLoading = false))
     }
   }
 }

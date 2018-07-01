@@ -53,6 +53,14 @@
                               required
                               v-model="register.password"/>
                           </v-flex>
+                          <v-flex xs12>
+                            <v-text-field
+                              label="Login"
+                              required
+                              :rules="[rules.required]"
+                              :error-messages="errors.loginMessage"
+                              v-model="register.login"/>
+                          </v-flex>
                         </v-layout>
                       </v-container>
                       <small>*indicates required field</small>
@@ -86,7 +94,7 @@
 </template>
 
 <script>
-import firebase from '@/firebase/config.js'
+import firebase, { db } from '@/firebase/config.js'
 
 export default {
   data () {
@@ -94,34 +102,55 @@ export default {
       dialog: false,
       register: {
         email: '',
-        password: ''
+        password: '',
+        login: ''
       },
       email: '',
       password: '',
       loading: false,
       errors: {
         emailMessage: [],
-        passwordMessage: []
+        passwordMessage: [],
+        loginMessage: []
       },
       rules: {
-          required: value => !!value || 'Required.',
-
-          email: value => {
-            const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-            return pattern.test(value) || 'Invalid e-mail.'
-          }
+        required: value => !!value || 'Required.',
+        email: value => {
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          return pattern.test(value) || 'Invalid e-mail.'
         }
+      }
     }
   },
   methods: {
     registerSave() {
       this.loading = true
-      firebase.auth().createUserWithEmailAndPassword(this.register.email, this.register.password)
-        .then(res => this.signIn(this.register.email, this.register.password))
+
+      let ref = db.collection('users').doc(this.register.login)
+      ref.get().then(res => {
+
+        if(res.exists){
+          this.loading = false
+          this.errors.loginMessage = 'Login is already exist.'
+          return
+        }
+
+        firebase.auth().createUserWithEmailAndPassword(this.register.email, this.register.password)
+        .then(res => {
+          ref.set({
+            friends: [],
+            id: res.user.uid
+          })
+          .catch(err => {
+            console.log(err)
+          })
+          this.signIn(this.register.email, this.register.password)
+        })
         .catch((error) => {
           this.loading = false
           this.errorMessage = error.message
         })
+      })
     },
     signIn(email, password){
       this.loading = true
