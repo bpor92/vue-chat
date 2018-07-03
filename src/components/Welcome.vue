@@ -94,7 +94,8 @@
 </template>
 
 <script>
-import firebase, { db } from '@/firebase/config.js'
+import firebase from 'firebase'
+import db from '../firebase/init'
 
 export default {
   data () {
@@ -128,7 +129,6 @@ export default {
 
       let ref = db.collection('users').doc(this.register.login)
       ref.get().then(res => {
-
         if(res.exists){
           this.loading = false
           this.errors.loginMessage = 'Login is already exist.'
@@ -155,6 +155,7 @@ export default {
     signIn(email, password){
       this.loading = true
       let that = this
+
       firebase.auth().signInWithEmailAndPassword(email, password)
         .then(res => {
           db.collection('users').where('id', '==', res.user.uid).get().then(snapshot => {

@@ -94,10 +94,11 @@ export default {
     },
     addToFriends(value){
       if(value === undefined) return
-      let userRef = db.collection('users').doc(value)
-      userRef.get().then(user => {
-        const data = user.data()
-
+      this.$store.dispatch('getUserDetailsByLogin', value).then(res => {
+        this.userSelect = null
+        this.$store.dispatch('updateUser', {...res, login: value}).then(res => {
+          debugger
+        })
       })
     }
   },

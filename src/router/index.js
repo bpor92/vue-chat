@@ -4,6 +4,7 @@ import firebase from 'firebase/app'
 import Welcome from '@/components/Welcome'
 import Home from '@/components/Home'
 import Chat from '@/components/Chat'
+import User from '@/components/User'
 
 Vue.use(Router)
 
@@ -27,8 +28,17 @@ const router =  new Router({
           path: '/chat',
           name: 'Chat',
           component: Chat,
-        }
+        },
+        {
+          path: '/user/:login',
+          name: 'User',
+          component: User,
+        },
       ]
+    },
+    {
+    path: '*',
+    redirect: '/'
     }
   ]
 })

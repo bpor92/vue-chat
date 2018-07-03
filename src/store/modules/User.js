@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { db } from '@/firebase/config'
+import db from '../../firebase/init'
 
 const state = {
   user: {
@@ -31,6 +31,20 @@ const actions = {
     db.collection('users').get().then(collection => {
       let usersList = collection.docs.map(user => user.id).filter(user => user !== state.user.login)
       commit('INIT_USERS_LIST', usersList)
+    })
+  },
+  getUserDetailsByLogin({commit, state}, payload){
+    let userRef = db.collection('users').doc(payload)
+    return userRef.get().then(user => {
+      return user.data()
+    })
+  },
+  updateUser({commit, state}, payload) {
+    let userRef = db.collection('users').doc(payload.login)
+    const friends = payload.friends
+    friends.push({id: state.user.id, confirm: false})
+    return userRef.update({
+      friends
     })
   }
 }
