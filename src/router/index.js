@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import firebase from 'firebase/app'
-import Welcome from '@/components/Welcome'
+import Login from '@/components/Login'
 import Home from '@/components/Home'
 import Chat from '@/components/Chat'
 import User from '@/components/User'
@@ -13,8 +13,8 @@ const router =  new Router({
   routes: [
     {
       path: '/',
-      name: 'Welcome',
-      component: Welcome
+      name: 'Login',
+      component: Login
     },
     {
       path: '/home',
@@ -51,7 +51,7 @@ router.beforeEach((to, from, next) => {
       next()
     } else {
       next({
-        name: 'Welcome'
+        name: 'Login'
       })
     }
   } else {

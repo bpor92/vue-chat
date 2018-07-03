@@ -56,6 +56,8 @@
           class="mt-3"
         ></v-autocomplete>
       </v-layout>
+      <v-spacer></v-spacer>
+      <span @click="logout">Logout</span>
     </v-toolbar>
     <v-content>
       <v-container fill-height>
@@ -66,9 +68,9 @@
     </v-content>
   </div>
 </template>
+
 <script>
 import { db } from '@/firebase/config'
-import axios from 'axios'
 
 export default {
   props: {
@@ -84,10 +86,17 @@ export default {
   },
   created() {
     this.initUsers()
+    this.initUserDetails()
   },
   methods: {
     initUsers() {
       this.$store.dispatch('initUsersList')
+    },
+    initUserDetails() {
+      this.$store.dispatch('initUserDetails')
+    },
+    logout() {
+      this.$store.dispatch('logout')
     },
     test() {
       this.$router.push({ name: 'Chat'})

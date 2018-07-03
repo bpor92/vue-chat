@@ -158,13 +158,7 @@ export default {
 
       firebase.auth().signInWithEmailAndPassword(email, password)
         .then(res => {
-          db.collection('users').where('id', '==', res.user.uid).get().then(snapshot => {
-            snapshot.forEach(user => {
-              const data = user.data()
-              that.$store.dispatch('setUser', { ...data, login: user.id})
-              that.$router.push({name: 'Home'})
-            })
-          })
+          that.$router.push({name: 'Home'})
         })
         .catch((error) => {
           this.loading = false

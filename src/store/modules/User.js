@@ -1,5 +1,7 @@
 import Vue from 'vue'
-import db from '../../firebase/init'
+import db from '@/firebase/init'
+import firebase from 'firebase/app'
+import router from "@/router/index"
 
 const state = {
   user: {
@@ -27,6 +29,15 @@ const actions = {
   setUser({commit}, payload){
     commit('SET_USER', payload)
   },
+  initUserDetails({commit, dispatch}, payload){
+    const loggedUserDetails = firebase.auth().currentUser
+    db.collection('users').where('id', '==', loggedUserDetails.uid).get().then(snapshot => {
+      snapshot.forEach(user => {
+        const data = user.data()
+        dispatch('setUser', { ...data, login: user.id})
+      })
+    })
+  },
   initUsersList({commit, state}, payload){
     db.collection('users').get().then(collection => {
       let usersList = collection.docs.map(user => user.id).filter(user => user !== state.user.login)
@@ -46,6 +57,11 @@ const actions = {
     return userRef.update({
       friends
     })
+  },
+  logout({commit}, payload) {
+    firebase.auth().signOut().then(() => {
+      router.go({ name: 'Login' });
+    });
   }
 }
 
