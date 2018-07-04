@@ -39,7 +39,7 @@ const actions = {
     })
   },
   initUsersList({commit, state}, payload){
-    db.collection('users').get().then(collection => {
+    return db.collection('users').get().then(collection => {
       let usersList = collection.docs.map(user => user.id).filter(user => user !== state.user.login)
       commit('INIT_USERS_LIST', usersList)
     })

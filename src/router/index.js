@@ -5,6 +5,7 @@ import Login from '@/components/Login'
 import Home from '@/components/Home'
 import Chat from '@/components/Chat'
 import User from '@/components/User'
+import Settings from '@/components/Settings'
 
 Vue.use(Router)
 
@@ -14,7 +15,10 @@ const router =  new Router({
     {
       path: '/',
       name: 'Login',
-      component: Login
+      component: Login,
+      meta: {
+        requiresGuest: true
+      }
     },
     {
       path: '/home',
@@ -33,6 +37,11 @@ const router =  new Router({
           path: '/user/:login',
           name: 'User',
           component: User,
+        },
+        {
+          path: '/settings',
+          name: 'Settings',
+          component: Settings,
         },
       ]
     },
@@ -54,7 +63,17 @@ router.beforeEach((to, from, next) => {
         name: 'Login'
       })
     }
+  }else if(to.matched.some(rec => rec.meta.requiresGuest)) {
+    let user = firebase.auth().currentUser
+    if (user) {
+      next({
+        name: 'Home',
+        redirect: to.fullPath
+      })
   } else {
+    next()
+  }
+  }else {
     next()
   }
 })

@@ -8,12 +8,23 @@
     >
       <v-list dense>
         <v-subheader class="mt-3 grey--text text--darken-1">FRIENDS</v-subheader>
+        <div v-if="loader.userFriends">
+          <v-flex class="text-xs-center">
+            <v-progress-circular
+              align-center
+              indeterminate
+              color="white"/>
+          </v-flex>
 
-        <v-list>
-          <v-list-tile v-for="friend in userFriends" :key="friend.id" avatar @click="test">
-            <v-list-tile-title v-text="friend.text"></v-list-tile-title>
-          </v-list-tile>
-        </v-list>
+        </div>
+        <div v-else>
+          <v-list>
+            <v-list-tile v-for="friend in userFriends" :key="friend.id" avatar @click="test">
+              <v-list-tile-title v-text="friend.text"></v-list-tile-title>
+            </v-list-tile>
+          </v-list>
+
+        </div>
 
         <v-list-tile>
           <v-list-tile-action>
@@ -82,6 +93,9 @@ export default {
       userSelect: null,
       search: null,
       drawer: true,
+      loader:{
+        userFriends: true
+      }
     }
   },
   created() {
@@ -90,7 +104,9 @@ export default {
   },
   methods: {
     initUsers() {
-      this.$store.dispatch('initUsersList')
+      this.$store.dispatch('initUsersList').then(res => {
+        this.loader.userFriends = false
+      })
     },
     initUserDetails() {
       this.$store.dispatch('initUserDetails')

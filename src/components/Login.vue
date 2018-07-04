@@ -85,7 +85,7 @@
       <v-dialog v-model="loading" persistent transition="fade-transition" fullscreen content-class="loading-dialog">
         <v-container fill-height>
           <v-layout row justify-center align-center>
-            <v-progress-circular indeterminate :size="70" :width="7" color="purple"></v-progress-circular>
+            <v-progress-circular indeterminate :size="70" :width="7" color="white"></v-progress-circular>
           </v-layout>
         </v-container>
       </v-dialog>
