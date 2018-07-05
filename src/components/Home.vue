@@ -8,7 +8,7 @@
     >
       <v-list dense>
         <v-subheader class="mt-3 grey--text text--darken-1">FRIENDS</v-subheader>
-        <div v-if="loader.userFriends">
+        <div v-if="loader.friends">
           <v-flex class="text-xs-center">
             <v-progress-circular
               align-center
@@ -19,8 +19,8 @@
         </div>
         <div v-else>
           <v-list>
-            <v-list-tile v-for="friend in userFriends" :key="friend.id" avatar @click="test">
-              <v-list-tile-title v-text="friend.text"></v-list-tile-title>
+            <v-list-tile v-for="friend in getFriends" :key="friend.id" avatar @click="startChat(friend.login)">
+              <v-list-tile-title v-text="friend.login"></v-list-tile-title>
             </v-list-tile>
           </v-list>
 
@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import { db } from '@/firebase/config'
+import db from '@/firebase/init'
 
 export default {
   props: {
@@ -94,42 +94,43 @@ export default {
       search: null,
       drawer: true,
       loader:{
-        userFriends: true
+        friends: true
       }
     }
   },
   created() {
-    this.initUsers()
-    this.initUserDetails()
+    this.initUserDetailsWithFriends()
+    this.initUsersList()
   },
   methods: {
-    initUsers() {
-      this.$store.dispatch('initUsersList').then(res => {
-        this.loader.userFriends = false
-      })
+    initUsersList() {
+      this.$store.dispatch('initUsersList')
     },
-    initUserDetails() {
-      this.$store.dispatch('initUserDetails')
+    initUserDetailsWithFriends() {
+      this.$store.dispatch('initUserDetailsWithFriends').then(res => {
+        this.loader.friends = false
+      })
     },
     logout() {
       this.$store.dispatch('logout')
     },
-    test() {
+    startChat(friendLogin) {
       this.$router.push({ name: 'Chat'})
     },
     addToFriends(value){
       if(value === undefined) return
       this.$store.dispatch('getUserDetailsByLogin', value).then(res => {
         this.userSelect = null
-        this.$store.dispatch('updateUser', {...res, login: value}).then(res => {
+        debugger
+        this.$store.dispatch('setFriendRequest', {...res, login: value}).then(res => {
           debugger
         })
       })
     }
   },
   computed: {
-    userFriends () {
-      return this.$store.getters.getUserFriends
+    getFriends () {
+      return this.$store.getters.getFriends
     },
     usersList () {
       return this.$store.getters.getUsersList

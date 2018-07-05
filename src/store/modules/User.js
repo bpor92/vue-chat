@@ -6,14 +6,14 @@ import router from "@/router/index"
 const state = {
   user: {
     id: null,
-    friends: [],
     login: ''
   },
+  friends: [],
   usersList: []
 }
 
 const getters = {
-  getUserFriends: state => state.user.friends,
+  getFriends: state => state.friends,
   getUsersList: state => state.usersList
 }
 
@@ -21,28 +21,40 @@ const mutations = {
   SET_USER(state, payload){
     Vue.set(state, 'user', payload)
   },
-  INIT_USERS_LIST(state, payload) {
+  SET_USER_LOGIN(state, payload){
+    Vue.set(state.user, 'login', payload)
+  },
+  SET_USER_ID(state, payload){
+    Vue.set(state.user, 'id', payload)
+  },
+  SET_FRIENDS(state, payload) {
+    Vue.set(state, 'friends', payload)
+  },
+  USERS_LIST(state, payload) {
     Vue.set(state, 'usersList', payload)
-  }
+  },
 }
 const actions = {
   setUser({commit}, payload){
     commit('SET_USER', payload)
   },
-  initUserDetails({commit, dispatch}, payload){
+  initUserDetailsWithFriends({commit}, payload){
     const loggedUserDetails = firebase.auth().currentUser
-    db.collection('users').where('id', '==', loggedUserDetails.uid).get().then(snapshot => {
-      snapshot.forEach(user => {
-        const data = user.data()
-        dispatch('setUser', { ...data, login: user.id})
+    let ref = db.collection('users').where('id', '==', loggedUserDetails.uid)
+    return new Promise(resolve => {
+      ref.onSnapshot(snapshot => {
+        snapshot.docChanges().forEach(change => {
+          let doc = change.doc
+          if (change.type === "added" || change.type === "modified") {
+            commit('SET_FRIENDS', doc.data().friends)
+            commit('SET_USER_ID', doc.data().id)
+            commit('SET_USER_LOGIN', doc.id)
+          }
+          resolve()
+        })
       })
     })
-  },
-  initUsersList({commit, state}, payload){
-    return db.collection('users').get().then(collection => {
-      let usersList = collection.docs.map(user => user.id).filter(user => user !== state.user.login)
-      commit('INIT_USERS_LIST', usersList)
-    })
+
   },
   getUserDetailsByLogin({commit, state}, payload){
     let userRef = db.collection('users').doc(payload)
@@ -62,6 +74,20 @@ const actions = {
     firebase.auth().signOut().then(() => {
       router.go({ name: 'Login' });
     });
+  },
+  initUsersList({commit, state}, payload){
+    let users = []
+    let ref = db.collection('users')
+
+    ref.onSnapshot(snapshot => {
+      snapshot.docChanges().forEach(change => {
+        let doc = change.doc
+        if (change.type === "added" && doc.id !== state.user.login) {
+          users.push(doc.id)
+        }
+      })
+      commit('USERS_LIST', users)
+    })
   }
 }
 

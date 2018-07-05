@@ -70,9 +70,9 @@ router.beforeEach((to, from, next) => {
         name: 'Home',
         redirect: to.fullPath
       })
-  } else {
+    } else {
     next()
-  }
+    }
   }else {
     next()
   }
