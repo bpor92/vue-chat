@@ -18,9 +18,6 @@ const getters = {
 }
 
 const mutations = {
-  SET_USER(state, payload){
-    Vue.set(state, 'user', payload)
-  },
   SET_USER_LOGIN(state, payload){
     Vue.set(state.user, 'login', payload)
   },
@@ -35,9 +32,6 @@ const mutations = {
   },
 }
 const actions = {
-  setUser({commit}, payload){
-    commit('SET_USER', payload)
-  },
   initUserDetailsWithFriends({commit}, payload){
     const loggedUserDetails = firebase.auth().currentUser
     let ref = db.collection('users').where('id', '==', loggedUserDetails.uid)
@@ -54,7 +48,6 @@ const actions = {
         })
       })
     })
-
   },
   getUserDetailsByLogin({commit, state}, payload){
     let userRef = db.collection('users').doc(payload)
@@ -62,20 +55,24 @@ const actions = {
       return user.data()
     })
   },
-  updateUser({commit, state}, payload) {
-    let userRef = db.collection('users').doc(payload.login)
+  sendFriendRequest({commit, state}, payload) {
+    let userRef = db.collection('users').doc(payload.document)
     const friends = payload.friends
-    friends.push({id: state.user.id, confirm: false})
+    friends.push({id: payload.requestUserId, confirm: payload.confirm, login: payload.login})
     return userRef.update({
       friends
     })
   },
-  logout({commit}, payload) {
+  logout() {
     firebase.auth().signOut().then(() => {
       router.go({ name: 'Login' });
     });
   },
-  initUsersList({commit, state}, payload){
+  setFriendRequest({commit, dispatch, state}, payload) {
+    dispatch('sendFriendRequest', {...payload, requestUserId: state.user.id, login: state.user.login})
+    dispatch('sendFriendRequest', {friends: JSON.parse(JSON.stringify(state.friends)), confirm: false, requestUserId: payload.requestUserId, document: state.user.login, login: payload.document})
+  },
+  initUsersList({commit, state}){
     let users = []
     let ref = db.collection('users')
 

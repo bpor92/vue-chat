@@ -23,8 +23,9 @@
               <v-list-tile-title v-text="friend.login"></v-list-tile-title>
             </v-list-tile>
           </v-list>
-
         </div>
+
+        <v-subheader class="mt-3 grey--text text--darken-1">FRIEND REQUEST</v-subheader>
 
         <v-list-tile>
           <v-list-tile-action>
@@ -82,6 +83,7 @@
 
 <script>
 import db from '@/firebase/init'
+import axios from 'axios'
 
 export default {
   props: {
@@ -122,7 +124,7 @@ export default {
       this.$store.dispatch('getUserDetailsByLogin', value).then(res => {
         this.userSelect = null
         debugger
-        this.$store.dispatch('setFriendRequest', {...res, login: value}).then(res => {
+        this.$store.dispatch('setFriendRequest', {...res, document: value, confirm: false, requestUserId: res.id}).then(res => {
           debugger
         })
       })
