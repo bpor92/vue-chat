@@ -13,8 +13,11 @@ const state = {
 }
 
 const getters = {
-  getFriends: state => state.friends,
-  getUsersList: state => state.usersList
+  getAllFriends: state => state.friends,
+  getFriends: state => state.friends.filter(friend => friend.confirm),
+  getFriendsRequest: state => state.friends.filter(friend => friend.confirm === false && friend.ownRequest === false),
+  getUsersList: state => state.usersList,
+  getUserLogin: state => state.user.login
 }
 
 const mutations = {
@@ -86,6 +89,18 @@ const actions = {
 
       commit('USERS_LIST', users)
     })
+  },
+  acceptFriendRequest({commit, state}, payload){
+    let friendRef = db.collection('users').doc(payload)
+    const friendRefArr = friendRef.get().then(item => {
+      let friendIndex = item.data().friends
+
+      debugger
+    })
+
+  },
+  declineFriendRequest({commit, state}, payload){
+
   }
 }
 

@@ -27,8 +27,10 @@
 
         <v-subheader class="mt-3 grey--text text--darken-1">FRIEND REQUEST</v-subheader>
         <v-list>
-          <v-list-tile v-for="friend in getRequestFriends" :key="friend.id" avatar @click="startChat(friend.login)">
-            <v-list-tile-title v-text="friend.login"></v-list-tile-title>
+          <v-list-tile v-for="friend in getRequestFriends" :key="friend.id">
+            <v-list-tile-title v-text="friend.login" @click="startChat(friend.login)"></v-list-tile-title>
+            <span @click="acceptFriendRequest(friend.login)" class="pointner mr-2"><v-icon dark right>check_circle</v-icon></span>
+            <span @click="declineFriendRequest(friend.login)" class="pointner"><v-icon dark right>block</v-icon></span>
           </v-list-tile>
         </v-list>
 
@@ -42,7 +44,7 @@
     </v-navigation-drawer>
 
     <v-toolbar
-      color="red"
+      color="blue-grey darken-1"
       dense
       fixed
       clipped-left
@@ -74,6 +76,7 @@
         ></v-autocomplete>
       </v-layout>
       <v-spacer></v-spacer>
+      <span class="mr-5 grey--text lighten-3--text">{{getUserLogin}}</span>
       <span @click="logout">Logout</span>
     </v-toolbar>
   </div>
@@ -86,7 +89,7 @@ import axios from 'axios'
 export default {
   data() {
     return {
-       isLoading: false,
+      isLoading: false,
       userSelect: null,
       search: null,
       drawer: true,
@@ -96,7 +99,7 @@ export default {
       }
     }
   },
-    created() {
+  created() {
     this.initUserDetailsWithFriends()
     this.initUsersList()
   },
@@ -129,6 +132,12 @@ export default {
         this.$store.dispatch('setFriendRequest', {...res, document: value, confirm: false, requestUserId: res.id}).then(res => {
         })
       })
+    },
+    acceptFriendRequest(login){
+      this.$store.dispatch('acceptFriendRequest', login)
+    },
+    declineFriendRequest(login) {
+      this.$store.dispatch('declineFriendRequest', login)
     }
   },
   computed: {
@@ -136,11 +145,17 @@ export default {
       return this.$store.getters.getFriends
     },
     getRequestFriends() {
-      const freinds = this.$store.getters.getFriends
+      return this.$store.getters.getFriendsRequest
+    },
+    getAllFriends() {
+      return this.$store.getters.getAllFriends
+    },
+    getUserLogin() {
+      return this.$store.getters.getUserLogin
     },
     usersList () {
       const userList = this.$store.getters.getUsersList
-      const friendsList = this.$store.getters.getFriends.map(user=> user.login)
+      const friendsList = this.$store.getters.getAllFriends.map(user=> user.login)
 
       return userList
         .filter(user => !friendsList.includes(user))
@@ -149,3 +164,9 @@ export default {
   }
 }
 </script>
+
+<style>
+  .pointner {
+    cursor: pointer;
+  }
+</style>
