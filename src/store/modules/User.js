@@ -58,7 +58,7 @@ const actions = {
   sendFriendRequest({commit, state}, payload) {
     let userRef = db.collection('users').doc(payload.document)
     const friends = payload.friends
-    friends.push({id: payload.requestUserId, confirm: payload.confirm, login: payload.login})
+    friends.push({id: payload.requestUserId, confirm: payload.confirm, login: payload.login, ownRequest: payload.ownRequest})
     return userRef.update({
       friends
     })
@@ -69,8 +69,8 @@ const actions = {
     });
   },
   setFriendRequest({commit, dispatch, state}, payload) {
-    dispatch('sendFriendRequest', {...payload, requestUserId: state.user.id, login: state.user.login})
-    dispatch('sendFriendRequest', {friends: JSON.parse(JSON.stringify(state.friends)), confirm: false, requestUserId: payload.requestUserId, document: state.user.login, login: payload.document})
+    dispatch('sendFriendRequest', {...payload, requestUserId: state.user.id, login: state.user.login, ownRequest: false, confirm: false})
+    dispatch('sendFriendRequest', {friends: JSON.parse(JSON.stringify(state.friends)), confirm: false, ownRequest: true, requestUserId: payload.requestUserId, document: state.user.login, login: payload.document})
   },
   initUsersList({commit, state}){
     let users = []
@@ -83,6 +83,7 @@ const actions = {
           users.push(doc.id)
         }
       })
+
       commit('USERS_LIST', users)
     })
   }
