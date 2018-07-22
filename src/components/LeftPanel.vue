@@ -134,7 +134,7 @@ export default {
       })
     },
     acceptFriendRequest(login){
-      this.$store.dispatch('acceptFriendRequest', login)
+      this.$store.dispatch('acceptFriendRequest', {login})
     },
     declineFriendRequest(login) {
       this.$store.dispatch('declineFriendRequest', login)

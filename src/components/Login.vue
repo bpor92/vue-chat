@@ -4,7 +4,7 @@
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md4>
           <v-card class="elevation-12">
-            <v-toolbar  color="red" class="text-xs-center">
+            <v-toolbar  class=" grey--text text--darken-1 text-xs-center">
               <v-toolbar-title >Join to chat!</v-toolbar-title>
               <v-spacer></v-spacer>
             </v-toolbar>

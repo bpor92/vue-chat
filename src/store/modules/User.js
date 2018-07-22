@@ -90,14 +90,31 @@ const actions = {
       commit('USERS_LIST', users)
     })
   },
-  acceptFriendRequest({commit, state}, payload){
+  acceptFriendRequest({commit, dispatch, state}, payload){
     let friendRef = db.collection('users').doc(payload)
     const friendRefArr = friendRef.get().then(item => {
-      let friendIndex = item.data().friends
+      let friends = item.data().friends
+      let friendFromRequest = friends.filter(user => user.login === state.user.login)
+      let friendFromRequestIndex = friends.findIndex(user => user.login === state.user.login)
+      friends[friendFromRequestIndex] = Object.assign({}, ...friendFromRequest, {confirm: true})
+      friendRef.update({
+        friends
+      })
 
-      debugger
+      dispatch('confirmRequest', payload)
     })
-
+  },
+  confirmRequest({commit, state}, payload) {
+    let userRef = db.collection('users').doc(state.user.login)
+    const userRefArr = userRef.get().then(item => {
+      let friends = item.data().friends
+      let friendFromRequest = friends.filter(user => user.login === payload)
+      let friendFromRequestIndex = friends.findIndex(user => user.login === payload)
+      friends[friendFromRequestIndex] = Object.assign({}, ...friendFromRequest, {confirm: true})
+      userRef.update({
+        friends
+      })
+    })
   },
   declineFriendRequest({commit, state}, payload){
 
