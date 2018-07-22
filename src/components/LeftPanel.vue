@@ -19,7 +19,7 @@
         </div>
         <div v-else>
           <v-list>
-            <v-list-tile v-for="friend in getFriends" :key="friend.id" avatar @click="startChat(friend.login)">
+            <v-list-tile v-for="friend in getFriends" :key="friend.id" avatar @click="startChat(friend.chatID)">
               <v-list-tile-title v-text="friend.login"></v-list-tile-title>
             </v-list-tile>
           </v-list>
@@ -115,8 +115,8 @@ export default {
     logout() {
       this.$store.dispatch('logout')
     },
-    startChat(friendLogin) {
-      this.$router.push({ name: 'Chat'})
+    startChat(id) {
+      this.$router.push({ name: 'Chat', params: {id}})
     },
     showNotification(notification){
       this[notification] = false
