@@ -91,26 +91,30 @@ const actions = {
     })
   },
   acceptFriendRequest({commit, dispatch, state}, payload){
-    let friendRef = db.collection('users').doc(payload)
+    const friendRef = db.collection('users').doc(payload.login)
     const friendRefArr = friendRef.get().then(item => {
       let friends = item.data().friends
       let friendFromRequest = friends.filter(user => user.login === state.user.login)
       let friendFromRequestIndex = friends.findIndex(user => user.login === state.user.login)
-      friends[friendFromRequestIndex] = Object.assign({}, ...friendFromRequest, {confirm: true})
-      friendRef.update({
-        friends
+
+      db.collection("chat").add({conversation: []}).then(function(docRef) {
+        friends[friendFromRequestIndex] = Object.assign({}, ...friendFromRequest, {confirm: true, chatID: docRef.id})
+        friendRef.update({
+          friends
+        })
+
+        dispatch('confirmRequest', {login: payload.login, chatID: docRef.id})
       })
 
-      dispatch('confirmRequest', payload)
     })
   },
   confirmRequest({commit, state}, payload) {
-    let userRef = db.collection('users').doc(state.user.login)
+    const userRef = db.collection('users').doc(state.user.login)
     const userRefArr = userRef.get().then(item => {
       let friends = item.data().friends
-      let friendFromRequest = friends.filter(user => user.login === payload)
-      let friendFromRequestIndex = friends.findIndex(user => user.login === payload)
-      friends[friendFromRequestIndex] = Object.assign({}, ...friendFromRequest, {confirm: true})
+      let friendFromRequest = friends.filter(user => user.login === payload.login)
+      let friendFromRequestIndex = friends.findIndex(user => user.login === payload.login)
+      friends[friendFromRequestIndex] = Object.assign({}, ...friendFromRequest, {confirm: true, chatID: payload.chatID})
       userRef.update({
         friends
       })
