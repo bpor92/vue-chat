@@ -3,7 +3,6 @@ import Router from 'vue-router'
 import firebase from 'firebase/app'
 import Login from '@/components/Login'
 import Home from '@/components/Home'
-import Chat from '@/components/Chat'
 import User from '@/components/User'
 import Settings from '@/components/Settings'
 
@@ -28,12 +27,6 @@ const router =  new Router({
         requiresAuth: true
       },
       children: [
-        {
-          path: '/chat',
-          name: 'Chat',
-          component: Chat,
-          props: true
-        },
         {
           path: '/user/:login',
           name: 'User',

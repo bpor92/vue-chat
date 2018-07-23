@@ -19,7 +19,7 @@
         </div>
         <div v-else>
           <v-list>
-            <v-list-tile v-for="friend in getFriends" :key="friend.id" avatar @click="startChat(friend.chatID)">
+            <v-list-tile v-for="friend in getFriends" :key="friend.id" avatar @click="$emit('activeConversation', friend.chatID)">
               <v-list-tile-title v-text="friend.login"></v-list-tile-title>
             </v-list-tile>
           </v-list>

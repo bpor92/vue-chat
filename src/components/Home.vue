@@ -1,7 +1,10 @@
 <template>
   <div>
 
-    <left-panel @notification="showNotification" />
+    <left-panel
+      @notification="showNotification"
+      @activeConversation="activeConversation"
+      />
 
     <v-content>
         <v-alert
@@ -13,6 +16,7 @@
         </v-alert>
 
         <v-layout >
+          <chat :chatID="chatID" />
           <router-view/>
         </v-layout>
 
@@ -22,10 +26,12 @@
 
 <script>
 import LeftPanel from './LeftPanel.vue'
+import Chat from './Chat.vue'
 
 export default {
   components: {
-    LeftPanel
+    LeftPanel,
+    Chat
   },
   data() {
     return {
@@ -33,7 +39,8 @@ export default {
         description: '',
         type: 'success',
         active: false
-      }
+      },
+      chatID: null
     }
   },
   methods: {
@@ -44,6 +51,9 @@ export default {
       setTimeout(() => {
         this.notification.active = false
       }, 2000)
+    },
+    activeConversation(id){
+      this.chatID = id
     }
   }
 }
