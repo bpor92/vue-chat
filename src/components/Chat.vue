@@ -1,29 +1,29 @@
 <template>
   <div>
-    <v-layout row v-if="chatID">
-      <v-flex xs12 >
-        <v-card>
-          <v-list two-line>
-            <template v-for="(item, index) in getConversation">
-              <v-list-tile
-                :key="item.title"
-                avatar
-              >
-                <v-list-tile-avatar>
-                  <span>{{item.name}}</span>
-                </v-list-tile-avatar>
 
-                <v-list-tile-content>
-                  <v-list-tile-title v-html="item.message"></v-list-tile-title>
-                  <v-list-tile-sub-title v-html="item.timestamp"></v-list-tile-sub-title>
-                </v-list-tile-content>
+    <v-flex xs12 >
+      <v-card>
+        <v-list two-line>
+          <template v-for="(item, index) in getConversation">
+            <v-list-tile
+              :key="item.title"
+              avatar
+            >
+              <v-list-tile-avatar>
+                <span>{{item.name}}</span>
+              </v-list-tile-avatar>
 
-              </v-list-tile>
-            </template>
-          </v-list>
-        </v-card>
-      </v-flex>
-    </v-layout>
+              <v-list-tile-content>
+                <v-list-tile-title v-html="item.message"></v-list-tile-title>
+                <v-list-tile-sub-title v-html="item.timestamp"></v-list-tile-sub-title>
+              </v-list-tile-content>
+
+            </v-list-tile>
+          </template>
+        </v-list>
+      </v-card>
+    </v-flex>
+
 
     <v-form>
       <v-text-field

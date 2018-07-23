@@ -6,6 +6,7 @@ import router from './router'
 import store from './store'
 import Vuetify from 'vuetify'
 import firebase from 'firebase';
+import VueChatScroll from 'vue-chat-scroll'
 import './firebase/init';
 import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
 
