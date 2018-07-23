@@ -56,7 +56,7 @@ export default {
   watch: {
     chatID() {
       if(this.chatID === null) return
-      debugger
+
       this.$store.dispatch('initConversation', this.chatID).then(() => {
         debugger
       })

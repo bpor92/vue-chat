@@ -4,6 +4,7 @@ import firebase from 'firebase/app'
 import router from "@/router/index"
 
 const state = {
+  loader: true,
   chatID: null,
   conversation: []
 }
@@ -18,16 +19,19 @@ const mutations = {
   },
   chatID(state, payload) {
     Vue.set(state, 'chatID', payload)
+  },
+  clearConversation(state, payload) {
+    state.conversation = []
+  },
+  loader(state, payload) {
+    Vue.set(state, 'loader', payload)
   }
 }
 
 const actions = {
   initConversation({commit, state}, payload){
     commit('chatID', payload)
-
-
     let ref = db.collection('chat').doc(payload).collection('conversation')
-
     ref.onSnapshot(snapshot => {
       snapshot.docChanges().forEach(change => {
         let doc = change.doc
@@ -40,12 +44,12 @@ const actions = {
           commit('initConversation', conversation)
         }
       })
-
+      commit('loader', false)
     })
-
-
-
-
+  },
+  initChat({commit}, payload) {
+    commit('loader', true)
+    commit('clearConversation')
   },
   sendMessage({commit, state}, payload){
     db.collection('chat').doc(state.chatID).collection('conversation').add({

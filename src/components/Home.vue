@@ -53,6 +53,7 @@ export default {
       }, 2000)
     },
     activeConversation(id){
+      this.$store.dispatch('initChat')
       this.chatID = id
     }
   }
