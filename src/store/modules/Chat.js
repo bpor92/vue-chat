@@ -2,6 +2,7 @@ import Vue from 'vue'
 import db from '@/firebase/init'
 import firebase from 'firebase/app'
 import router from "@/router/index"
+import moment from 'moment'
 
 const state = {
   loader: true,
@@ -31,7 +32,7 @@ const mutations = {
 const actions = {
   initConversation({commit, state}, payload){
     commit('chatID', payload)
-    let ref = db.collection('chat').doc(payload).collection('conversation')
+    let ref = db.collection('chat').doc(payload).collection('conversation').orderBy('timestamp')
     ref.onSnapshot(snapshot => {
       snapshot.docChanges().forEach(change => {
         let doc = change.doc
@@ -39,7 +40,7 @@ const actions = {
           let conversation = {
             name: doc.data().name,
             message: doc.data().message,
-            timestamp: doc.data().timestamp
+            timestamp: moment(doc.data().timestamp).format('lll')
           }
           commit('initConversation', conversation)
         }

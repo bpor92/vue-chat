@@ -10,6 +10,7 @@ import './firebase/init';
 import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
 
 Vue.use(Vuetify)
+Vue.use(VueChatScroll)
 
 Vue.config.productionTip = false
 
