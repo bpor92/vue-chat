@@ -15,9 +15,11 @@
           {{notification.description}}
         </v-alert>
 
-        <v-layout >
-          <chat :chatID="chatID" />
-          <router-view/>
+        <v-layout align-center justify-center mt-5>
+          <v-flex xs12 sm8 md6>
+            <chat :chatID="chatID" />
+            <router-view/>
+          </v-flex>
         </v-layout>
 
     </v-content>

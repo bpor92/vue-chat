@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <v-flex xs12 >
+
       <v-card>
         <v-list two-line>
           <template v-for="(item, index) in getConversation">
@@ -22,7 +22,7 @@
           </template>
         </v-list>
       </v-card>
-    </v-flex>
+
 
 
     <v-form>
