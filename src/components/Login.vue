@@ -81,23 +81,17 @@
       </v-layout>
     </v-container>
 
-    <v-layout row justify-center>
-      <v-dialog v-model="loading" persistent transition="fade-transition" fullscreen content-class="loading-dialog">
-        <v-container fill-height>
-          <v-layout row justify-center align-center>
-            <v-progress-circular indeterminate :size="70" :width="7" color="white"></v-progress-circular>
-          </v-layout>
-        </v-container>
-      </v-dialog>
-    </v-layout>
+    <loader :loading="loader" />
   </v-content>
 </template>
 
 <script>
 import firebase from 'firebase'
 import db from '../firebase/init'
+import loader from './ui/loader.vue'
 
 export default {
+  components: { loader },
   data () {
     return {
       dialog: false,
@@ -108,7 +102,7 @@ export default {
       },
       email: '',
       password: '',
-      loading: false,
+      loader: false,
       errors: {
         emailMessage: [],
         passwordMessage: [],
@@ -125,12 +119,12 @@ export default {
   },
   methods: {
     registerSave() {
-      this.loading = true
+      this.loader = true
 
       let ref = db.collection('users').doc(this.register.login)
       ref.get().then(res => {
         if(res.exists){
-          this.loading = false
+          this.loader = false
           this.errors.loginMessage = 'Login is already exist.'
           return
         }
@@ -147,13 +141,13 @@ export default {
           this.signIn(this.register.email, this.register.password)
         })
         .catch((error) => {
-          this.loading = false
+          this.loader = false
           this.errorMessage = error.message
         })
       })
     },
     signIn(email, password){
-      this.loading = true
+      this.loader = true
       let that = this
 
       firebase.auth().signInWithEmailAndPassword(email, password)
@@ -161,7 +155,7 @@ export default {
           that.$router.push({name: 'Home'})
         })
         .catch((error) => {
-          this.loading = false
+          this.loader = false
           if(error.code === 'auth/user-not-found'){
             this.errors.emailMessage = error.message
           }

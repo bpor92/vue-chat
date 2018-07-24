@@ -1,10 +1,13 @@
 <template>
   <div>
+    <template>
+      <loader :loading="loader" />
+    </template>
 
-
-      <v-card>
-        <v-list two-line>
-          <template v-for="(item, index) in getConversation">
+    <template>
+      <v-card class="chat__container" >
+        <ul two-line v-chat-scroll="{always: true, smooth: true}">
+          <li v-for="(item, index) in getConversation" :key="index" >
             <v-list-tile
               :key="item.title"
               avatar
@@ -19,27 +22,30 @@
               </v-list-tile-content>
 
             </v-list-tile>
-          </template>
-        </v-list>
+          </li>
+        </ul>
       </v-card>
 
+      <v-form>
+        <v-text-field
+          v-model="data.message"
+          name="login"
+          label="text"
+          type="text"
+          />
 
+          <span @click="sendMessage">save</span>
+      </v-form>
+    </template>
 
-    <v-form>
-      <v-text-field
-        v-model="data.message"
-        name="login"
-        label="text"
-        type="text"
-        />
-
-        <span @click="sendMessage">save</span>
-    </v-form>
   </div>
 </template>
 
 <script>
+import loader from './ui/loader.vue'
+
 export default {
+  components: { loader },
   props: {
     chatID: {
       type: String
@@ -49,16 +55,17 @@ export default {
     return {
       data: {
         message: '',
-        name: 'TEST'
+        name: 'TEST',
+        loader: false
       },
     }
   },
   watch: {
     chatID() {
       if(this.chatID === null) return
-
+      this.loader = true
       this.$store.dispatch('initConversation', this.chatID).then(() => {
-        debugger
+        this.loader = false
       })
     }
   },
@@ -75,3 +82,9 @@ export default {
 }
 </script>
 
+<style>
+.chat__container {
+  max-height: 400px;
+  overflow: auto;
+}
+</style>
