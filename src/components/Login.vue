@@ -167,9 +167,4 @@ export default {
   }
 }
 </script>
-<style>
-.loading-dialog{
-  background-color: rgba(125, 120, 120, 0.3);
-  opacity: 0.5;
-}
-</style>
+

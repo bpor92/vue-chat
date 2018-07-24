@@ -5,10 +5,9 @@
     </template>
 
     <template>
-      <v-card class="chat__container" >
-        <ul two-line v-chat-scroll="{always: true, smooth: true}">
-          <li v-for="(item, index) in getConversation" :key="index" >
-            <v-list-tile
+      <ul class="chatroom" v-chat-scroll>
+        <li class="message" v-for="(item, index) in getConversation" :key="index">
+           <v-list-tile
               :key="item.title"
               avatar
             >
@@ -22,9 +21,9 @@
               </v-list-tile-content>
 
             </v-list-tile>
-          </li>
-        </ul>
-      </v-card>
+        </li>
+      </ul>
+
 
       <v-form>
         <v-text-field
@@ -56,8 +55,18 @@ export default {
       data: {
         message: '',
         name: 'TEST',
-        loader: false
       },
+        loader: false,
+      	messages: [
+      	{from: "Theodore", body: "As you can see, even though"},
+      	{from: "Theodore", body: "I've got old messages loaded"},
+      	{from: "Theodore", body: "the v-chat-scroll directive"},
+      	{from: "Theodore", body: "will scroll to the bottom"},
+      	{from: "Theodore", body: "on page load! Isn't that"},
+      	{from: "Theodore", body: "really"},
+      	{from: "Theodore", body: "really"},
+      	{from: "Theodore", body: "cool?"}
+      ]
     }
   },
   watch: {
@@ -83,8 +92,12 @@ export default {
 </script>
 
 <style>
-.chat__container {
-  max-height: 400px;
+.chatroom {
+  height: 200px;
+  width: 500px;
+  border: 1px solid black;
+  padding: 10px 20px 5px 10px;
   overflow: auto;
 }
+
 </style>
