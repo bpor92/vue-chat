@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import db from '@/firebase/init'
-import firebase from 'firebase/app'
 import router from "@/router/index"
 import moment from 'moment'
 
@@ -52,10 +51,10 @@ const actions = {
     commit('loader', true)
     commit('clearConversation')
   },
-  sendMessage({commit, state}, payload){
+  sendMessage({commit, rootState, state}, payload){
     db.collection('chat').doc(state.chatID).collection('conversation').add({
-      message: payload.message,
-      name: 'TEST',
+      message: payload,
+      name: rootState.User.user.login,
       timestamp: Date.now()
     }).catch(err => {
       console.log(err)

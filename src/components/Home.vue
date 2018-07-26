@@ -17,7 +17,7 @@
 
         <v-layout align-center justify-center mt-5>
           <v-flex xs12 sm8 md6>
-            <chat :chatID="chatID" />
+            <chat v-show="chatID !== null" :chatID="chatID" />
             <router-view/>
           </v-flex>
         </v-layout>
@@ -55,6 +55,7 @@ export default {
       }, 2000)
     },
     activeConversation(id){
+      if(this.chatID === id) return
       this.$store.dispatch('initChat')
       this.chatID = id
     }

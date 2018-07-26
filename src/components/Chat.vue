@@ -24,17 +24,16 @@
         </li>
       </ul>
 
+      <v-text-field
+        v-model="data.message"
+        @keyup.enter="sendMessage"
+        label="message:"
+        type="text"
+        />
 
-      <v-form>
-        <v-text-field
-          v-model="data.message"
-          name="login"
-          label="text"
-          type="text"
-          />
+        <span @click="sendMessage">save</span>
 
-          <span @click="sendMessage">save</span>
-      </v-form>
+
     </template>
 
   </div>
@@ -53,8 +52,7 @@ export default {
   data() {
     return {
       data: {
-        message: '',
-        name: 'TEST',
+        message: ''
       },
         loader: false,
       	messages: [
@@ -71,6 +69,7 @@ export default {
   },
   watch: {
     chatID() {
+      debugger
       if(this.chatID === null) return
       this.loader = true
       this.$store.dispatch('initConversation', this.chatID).then(() => {
@@ -80,7 +79,9 @@ export default {
   },
   methods: {
     sendMessage() {
-      this.$store.dispatch('sendMessage', this.data)
+      this.$store.dispatch('sendMessage', this.data.message).then(() => {
+        this.data.message = ''
+      })
     }
   },
   computed: {
@@ -93,8 +94,8 @@ export default {
 
 <style>
 .chatroom {
-  height: 200px;
-  width: 500px;
+  height: 500px;
+  width: 80%;
   border: 1px solid black;
   padding: 10px 20px 5px 10px;
   overflow: auto;
